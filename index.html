@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Evaluación de Equipos de Alto Rendimiento</title>
+  
+  <!-- Materialize CSS -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f5f5f5;
+    }
+    header {
+      background-color: #1976D2;
+      padding: 20px;
+    }
+    header h1 {
+      color: white;
+      text-align: center;
+    }
+    section {
+      margin: 30px;
+    }
+    .form-section {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background-color: #1976D2;
+      color: white;
+      margin-top: 20px;
+    }
+    .result-text {
+      font-size: 18px;
+      font-weight: bold;
+      color: #1976D2;
+      margin-top: 20px;
+    }
+    .input-field select {
+      display: block;
+      margin-top: 10px;
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .input-field p {
+      font-weight: bold;
+      color: #333;
+    }
+    .question-section {
+      padding: 10px;
+      border-left: 4px solid #1976D2;
+      margin-bottom: 15px;
+      transition: border-color 0.3s ease;
+    }
+    .question-section.incomplete {
+      border-left: 4px solid #FF0000;
+    }
+    .input-field select {
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .input-field label {
+      font-weight: 600;
+    }
+    .recommendation {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #e3f2fd;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>Evaluación de Equipos de Alto Rendimiento</h1>
+  </header>
+
+  <!-- Instrucciones -->
+  <section>
+    <p>Los equipos de alto rendimiento se caracterizan por la confianza mutua, la comunicación efectiva, la responsabilidad compartida, y la adaptabilidad. A continuación, se te presentarán una serie de preguntas para evaluar el rendimiento de tu equipo. Por favor, selecciona la opción que mejor describa la situación actual de tu equipo:</p>
+    <ul>
+      <li><strong>1 - Muy en desacuerdo</strong></li>
+      <li><strong>2 - En desacuerdo</strong></li>
+      <li><strong>3 - Neutral</strong></li>
+      <li><strong>4 - De acuerdo</strong></li>
+      <li><strong>5 - Muy de acuerdo</strong></li>
+    </ul>
+  </section>
+
+  <!-- Formulario -->
+  <section class="form-section">
+    <h5>Formulario de Evaluación</h5>
+    <form id="evaluationForm">
+      
+      <div class="question-section">
+        <p>Confianza Mutua: ¿Los miembros del equipo confían en que los demás cumplirán sus promesas y compromisos?</p>
+        <div class="input-field">
+          <select name="q1" required>
+            <option value="" disabled selected>Elige una opción</option>
+            <option value="1">Muy en desacuerdo</option>
+            <option value="2">En desacuerdo</option>
+            <option value="3">Neutral</option>
+            <option value="4">De acuerdo</option>
+            <option value="5">Muy de acuerdo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Repetir lo mismo para las demás preguntas -->
+
+      <button class="btn waves-effect waves-light" type="button" onclick="calculateScore()">Calcular Puntaje</button>
+    </form>
+    <p id="result" class="result-text"></p>
+  </section>
+
+  <!-- Recomendaciones -->
+  <section id="recommendations" class="recommendation">
+    <h5>Recomendaciones para Mejorar en Función de tu Puntaje</h5>
+    <div id="recommendationList"></div>
+  </section>
+
+  <!-- Materialize JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <!-- JavaScript para calcular el puntaje -->
+  <script>
+    function calculateScore() {
+      const form = document.forms["evaluationForm"];
+      let totalScore = 0;
+      let firstInvalidElement = null;
+      let allSections = document.querySelectorAll('.question-section');
+      
+      allSections.forEach(section => section.classList.remove('incomplete'));
+
+      for (let i = 0; i < form.length; i++) {
+        if (form[i].type === "select-one" && form[i].value === "") {
+          if (!firstInvalidElement) {
+            firstInvalidElement = form[i];
+            form[i].closest('.question-section').classList.add('incomplete');
+          } else {
+            form[i].closest('.question-section').classList.add('incomplete');
+          }
+        } else if (form[i].type === "select-one" && form[i].value !== "") {
+          totalScore += parseInt(form[i].value);
+        }
+      }
+
+      if (firstInvalidElement) {
+        firstInvalidElement.focus();
+        alert('Por favor, responde todas las preguntas antes de calcular el puntaje.');
+        return;
+      }
+
+      let resultText;
+      let recommendationList = document.getElementById("recommendationList");
+      recommendationList.innerHTML = '';  // Clear recommendations
+      
+      if (totalScore >= 90) {
+        resultText = `Puntaje Total: ${totalScore} - ¡Felicidades! Tienes un equipo de alto rendimiento.`;
+        recommendationList.innerHTML += `
+          <p><strong>Confianza y Responsabilidad:</strong> Tu equipo es muy confiable y responsable. Sigue reforzando estos aspectos estableciendo acuerdos claros y realizando revisiones periódicas del cumplimiento de promesas. Considera realizar reuniones trimestrales para discutir cómo mejorar la transparencia y revisar si los compromisos se cumplen.</p>
+          <p><strong>Desarrollo de Habilidades:</strong> Aunque tu equipo está en alto rendimiento, nunca dejes de lado el crecimiento. Fomenta la participación en talleres de mejora continua y promueve el desarrollo de nuevas habilidades técnicas y blandas para seguir avanzando.</p>
+        `;
+      } else if (totalScore >= 75) {
+        resultText = `Puntaje Total: ${totalScore} - Tu equipo está en buen camino hacia el alto rendimiento, pero hay áreas por mejorar.`;
+        recommendationList.innerHTML += `
+          <p><strong>Comunicación:</strong> Es importante mejorar la comunicación abierta dentro del equipo. Para fomentar esto, implementa reuniones semanales donde los miembros del equipo puedan expresar sus preocupaciones y compartir ideas. Usa dinámicas de equipo para fortalecer la confianza en estas sesiones.</p>
+          <p><strong>Retroalimentación Constructiva:</strong> Asegúrate de que la retroalimentación sea constante y no solo en momentos críticos. Puedes implementar una política de retroalimentación 360 grados, donde los miembros puedan recibir y dar retroalimentación de manera anónima, lo cual fomenta un ambiente de mejora continua.</p>
+          <p><strong>Adaptabilidad:</strong> Si el equipo tiene dificultades para adaptarse a los cambios, considera trabajar en simulaciones de escenarios de crisis o cambios rápidos. Esto les permitirá ganar experiencia en cómo gestionar la incertidumbre.</p>
+        `;
+      } else if (totalScore >= 50) {
+        resultText = `Puntaje Total: ${totalScore} - Tu equipo necesita trabajar en varias áreas para mejorar su rendimiento.`;
+        recommendationList.innerHTML += `
+          <p><strong>Confianza:</strong> La falta de confianza dentro del equipo puede estar frenando su potencial. Para fomentar más confianza, realiza actividades de "team building" que se centren en la colaboración y la creación de relaciones interpersonales. También, promueve una cultura donde la responsabilidad personal sea valorada y respetada.</p>
+          <p><strong>Coordinación:</strong> Si la coordinación de tareas es deficiente, es recomendable implementar herramientas como Trello o Asana para hacer un seguimiento claro y transparente de las responsabilidades. Asegúrate de que todos los miembros entiendan claramente sus responsabilidades y plazos.</p>
+          <p><strong>Manejo de Emociones:</strong> Si hay tensiones emocionales que interfieren con el trabajo, considera ofrecer talleres de inteligencia emocional. Enseña a los miembros del equipo a reconocer y gestionar sus emociones antes de que afecten negativamente al equipo.</p>
+        `;
+      } else {
+        resultText = `Puntaje Total: ${totalScore} - El equipo enfrenta dificultades importantes y necesita atención inmediata.`;
+        recommendationList.innerHTML += `
+          <p><strong>Resolución de Conflictos:</strong> Es necesario abordar los conflictos que estén surgiendo dentro del equipo. Implementa sesiones de mediación y resolución de conflictos donde los miembros puedan expresar sus frustraciones en un entorno seguro y controlado.</p>
+          <p><strong>Confianza:</strong> La falta de confianza está frenando el progreso del equipo. Organiza actividades de "outdoor training" o talleres internos que se centren en mejorar las dinámicas interpersonales y la transparencia en la toma de decisiones.</p>
+          <p><strong>Gestión del Estrés:</strong> El estrés y la presión pueden estar afectando a tu equipo. Considera implementar una política de "well-being" donde los miembros del equipo tengan acceso a sesiones de coaching o mindfulness para reducir el impacto del estrés.</p>
+        `;
+      }
+
+      document.getElementById("result").innerText = resultText;
+    }
+  </script>
+</body>
+</html>
